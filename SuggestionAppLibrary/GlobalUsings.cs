@@ -1,3 +1,5 @@
 ﻿global using SuggestionAppLibrary.Models;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
+global using SuggestionAppLibrary.DataAccess;
+global using MongoDB.Bson;
+global using MongoDB.Bson.Serialization.Attributes;
+global using MongoDB.Driver;
