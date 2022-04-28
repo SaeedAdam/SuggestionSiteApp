@@ -1,9 +1,9 @@
 ﻿namespace SuggestionAppLibrary.DataAccess;
 
-public class MongoDBDataAccess
+public class MongoDbDataAccess
 {
     private readonly IMongoDatabase _db;
-    public MongoDBDataAccess(string dbName, string connectionString)
+    public MongoDbDataAccess(string dbName, string connectionString)
     {
         var client = new MongoClient(connectionString);
         _db = client.GetDatabase(dbName);
