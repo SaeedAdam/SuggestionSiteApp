@@ -1,11 +1,4 @@
-﻿using MongoDB.Driver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SuggestionAppLibrary.DataAccess;
+﻿namespace SuggestionAppLibrary.DataAccess;
 public class MongoUserData : IUserData
 {
     private readonly IMongoCollection<UserModel> _users;

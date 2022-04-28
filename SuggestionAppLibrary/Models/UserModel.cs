@@ -1,7 +1,4 @@
-﻿using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-
-namespace SuggestionAppLibrary.Models;
+﻿namespace SuggestionAppLibrary.Models;
 public class UserModel
 {
     [BsonId]

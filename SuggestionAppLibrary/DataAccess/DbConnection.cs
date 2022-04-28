@@ -1,6 +1,5 @@
 ﻿
 using Microsoft.Extensions.Configuration;
-using MongoDB.Driver;
 
 namespace SuggestionAppLibrary.DataAccess;
 
@@ -8,7 +7,7 @@ public class DbConnection : IDbConnection
 {
     private readonly IConfiguration _config;
     private readonly IMongoDatabase _db;
-    private string _connectionId;
+    private readonly string _connectionId;
 
     public string DbName { get; private set; }
     public string CategoryCollectionName { get; private set; } = "categories";
