@@ -2,6 +2,7 @@
 
 public class SuggestionModel
 {
+    [BsonRepresentation(BsonType.ObjectId)]
     public string Id { get; set; }
     public string Suggestion { get; set; }
     public string Description { get; set; }

@@ -21,4 +21,6 @@
     <ProjectReference Include="..\SuggestionAppLibrary\SuggestionAppLibrary.csproj" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
 </Project>

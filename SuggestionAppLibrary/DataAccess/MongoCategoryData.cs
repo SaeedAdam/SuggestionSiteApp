@@ -17,7 +17,7 @@ public class MongoCategoryData : ICategoryData
     {
         var output = _cache.Get<List<CategoryModel>>(CacheName);
 
-        if (output == null)
+        if (output == null || output.Count == 0)
         {
             var results = await _categories.FindAsync(_ => true);
             output = results.ToList();
