@@ -32,6 +32,20 @@ public class MongoSuggestionData : ISuggestionData
         return output;
     }
 
+    public async Task<List<SuggestionModel>> GetUsersSuggestions(string userId)
+    {
+        var output = _cache.Get<List<SuggestionModel>>(userId);
+        if (output is null)
+        {
+            var results = await _suggestions.FindAsync(s => s.Author.Id == userId);
+            output = results.ToList();
+
+            _cache.Set(userId, output, TimeSpan.FromMinutes(1));
+        }
+
+        return output;
+    }
+
     public async Task<List<SuggestionModel>> GetAllApprovedSuggestion()
     {
         var output = await GetAllSuggestions();
@@ -41,7 +55,7 @@ public class MongoSuggestionData : ISuggestionData
     public async Task<SuggestionModel> GetSuggestion(string id)
     {
         var results = await _suggestions.FindAsync(s => s.Id == id);
-        return  results.FirstOrDefault();
+        return results.FirstOrDefault();
     }
 
     public async Task<List<SuggestionModel>> GetAllSuggestionsWaitingForApproval()
@@ -96,7 +110,7 @@ public class MongoSuggestionData : ISuggestionData
 
             _cache.Remove(CacheName);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await session.AbortTransactionAsync();
             throw;
@@ -125,11 +139,11 @@ public class MongoSuggestionData : ISuggestionData
 
             await session.CommitTransactionAsync();
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             await session.AbortTransactionAsync();
             throw;
         }
     }
-    
+
 }

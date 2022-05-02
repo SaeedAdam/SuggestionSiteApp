@@ -7,7 +7,7 @@ public class BasicSuggestionModel
 
     public BasicSuggestionModel()
     {
-        
+
     }
 
     public BasicSuggestionModel(SuggestionModel suggestion)

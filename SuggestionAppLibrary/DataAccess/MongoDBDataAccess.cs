@@ -36,7 +36,7 @@ public class MongoDbDataAccess
         collection.ReplaceOne(
             new BsonDocument("_id", id),
             record,
-            new ReplaceOptions {IsUpsert = true});
+            new ReplaceOptions { IsUpsert = true });
     }
 
     public void DeleteRecord<T>(string table, Guid id)

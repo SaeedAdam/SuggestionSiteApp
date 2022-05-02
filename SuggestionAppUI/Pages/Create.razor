@@ -1,0 +1,92 @@
+﻿@page "/Create"
+@using SuggestionAppUI.Models
+@using SuggestionAppUI.Components
+@inject ICategoryData CategoryData
+@inject ISuggestionData SuggestionData
+@inject IUserData UserData
+@inject NavigationManager NavManager
+
+
+<h1>Make A Suggestion</h1>
+
+<div>
+    <div>
+        <div @onclick="ClosePage"></div>
+    </div>
+    @if (Categories is not null)
+    {
+        <EditForm Model="_suggestion" OnValidSubmit="CreateSuggestion">
+            <DataAnnotationsValidator/>
+            <ValidationSummary/>
+            <div>
+                <label for="suggestion-text">Suggestion</label>
+                <div>Focus on the topic or technology you want to learn about.</div>
+                <InputText id="suggestion-text" @bind-Value="_suggestion.Suggestion"/>
+            </div>
+            <div>
+                <label for="category">Category</label>
+                <div>Choose One Category.</div>
+                <div>
+                    <MyInputRadioGroup id="category" @bind-Value="_suggestion.CategoryId">
+                        @foreach (var c in Categories)
+                        {
+                            <div>
+                                <InputRadio Value="@c.CategoryId" id="@c.CategoryId"/>
+                                <label for="@c.CategoryId">@c.CategoryName - @c.CategoryDescription</label>
+                            </div>
+                        }
+                    </MyInputRadioGroup>
+                </div>
+            </div>
+            <div>
+                <label for="description">Description</label>
+                <div>Briefly describe your suggestion.</div>
+                <InputText id="description" @bind-Value="_suggestion.Description"/>
+            </div>
+            <div>
+                <button type="submit">Suggest</button>
+            </div>
+        </EditForm>
+    }
+</div>
+
+
+@code
+{
+    private CreateSuggestionModel _suggestion = new();
+    public List<CategoryModel> Categories { get; set; }
+    public UserModel LoggedInUser { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        Categories = await CategoryData.GetAllCategories();
+
+        // TODO: Replace with user lookup. 
+        LoggedInUser = await UserData.GetUserFromAuthentication("abc-123");
+    }
+
+    private void ClosePage()
+    {
+        NavManager.NavigateTo("/");
+    }
+
+    private async Task CreateSuggestion()
+    {
+        SuggestionModel s = new();
+        s.Suggestion = _suggestion.Suggestion;
+        s.Description = _suggestion.Description;
+        s.Author = new BasicUserModel(LoggedInUser);
+        s.Category = Categories.FirstOrDefault(c => c.CategoryId == _suggestion.CategoryId);
+
+        if (s.Category is null)
+        {
+            _suggestion.CategoryId = "";
+            return;
+        }
+
+        await SuggestionData.CreateSuggestion(s);
+        _suggestion = new CreateSuggestionModel();
+        ClosePage();
+    }
+}

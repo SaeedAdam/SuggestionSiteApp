@@ -24,7 +24,7 @@ public class MongoCategoryData : ICategoryData
 
             _cache.Set(CacheName, output, TimeSpan.FromDays(1));
         }
-        
+
         return output;
     }
 

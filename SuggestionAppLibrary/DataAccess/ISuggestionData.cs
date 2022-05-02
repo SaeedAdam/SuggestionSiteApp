@@ -9,4 +9,5 @@ public interface ISuggestionData
     Task UpdateSuggestion(SuggestionModel suggestion);
     Task UpvoteSuggestion(string suggestionId, string userId);
     Task CreateSuggestion(SuggestionModel suggestion);
+    Task<List<SuggestionModel>> GetUsersSuggestions(string userId);
 }

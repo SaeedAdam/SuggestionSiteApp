@@ -34,6 +34,6 @@ public class MongoUserData : IUserData
     public Task UpdateUser(UserModel user)
     {
         var filter = Builders<UserModel>.Filter.Eq("Id", user.Id);
-        return _users.ReplaceOneAsync(filter, user, new ReplaceOptions {IsUpsert = true});
+        return _users.ReplaceOneAsync(filter, user, new ReplaceOptions { IsUpsert = true });
     }
 }

@@ -8,7 +8,7 @@ public class BasicUserModel
 
     public BasicUserModel()
     {
-        
+
     }
 
     public BasicUserModel(UserModel user)
