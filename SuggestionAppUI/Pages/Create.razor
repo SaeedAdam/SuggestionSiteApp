@@ -11,7 +11,7 @@
 
 <div>
     <div>
-        <div @onclick="ClosePage"></div>
+        <div @onclick="ClosePage">Close</div>
     </div>
     @if (Categories is not null)
     {
@@ -75,6 +75,7 @@
     {
         SuggestionModel s = new();
         s.Suggestion = _suggestion.Suggestion;
+        s.ApprovedForRelease = false;
         s.Description = _suggestion.Description;
         s.Author = new BasicUserModel(LoggedInUser);
         s.Category = Categories.FirstOrDefault(c => c.CategoryId == _suggestion.CategoryId);

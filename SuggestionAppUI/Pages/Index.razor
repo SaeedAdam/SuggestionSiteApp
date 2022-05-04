@@ -9,7 +9,7 @@
 
 <h1>Training Suggestions</h1>
 <div>
-    <button class="btn btn-primary">Suggest</button>
+    <button class="btn btn-primary" @onclick="OpenCreatePage">Suggest</button>
 </div>
 <div>
     <div>@_suggestions?.Count suggestion</div>
@@ -213,5 +213,10 @@
     private void OpenDetails(SuggestionModel suggestion)
     {
         NavManager.NavigateTo($"/Details/{suggestion.Id}");
+    }
+
+    private void OpenCreatePage()
+    {
+        NavManager.NavigateTo("/Create");
     }
 }
