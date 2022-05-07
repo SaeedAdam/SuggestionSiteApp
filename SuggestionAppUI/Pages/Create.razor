@@ -1,6 +1,8 @@
 ﻿@page "/Create"
+@attribute [Authorize]
 @using SuggestionAppUI.Models
 @using SuggestionAppUI.Components
+@inject AuthenticationStateProvider authProvider
 @inject ICategoryData CategoryData
 @inject ISuggestionData SuggestionData
 @inject IUserData UserData
@@ -13,7 +15,7 @@
     <div>
         <div @onclick="ClosePage">Close</div>
     </div>
-    @if (Categories is not null)
+    @if (_categories is not null)
     {
         <EditForm Model="_suggestion" OnValidSubmit="CreateSuggestion">
             <DataAnnotationsValidator/>
@@ -28,7 +30,7 @@
                 <div>Choose One Category.</div>
                 <div>
                     <MyInputRadioGroup id="category" @bind-Value="_suggestion.CategoryId">
-                        @foreach (var c in Categories)
+                        @foreach (var c in _categories)
                         {
                             <div>
                                 <InputRadio Value="@c.CategoryId" id="@c.CategoryId"/>
@@ -54,16 +56,14 @@
 @code
 {
     private CreateSuggestionModel _suggestion = new();
-    public List<CategoryModel> Categories { get; set; }
-    public UserModel LoggedInUser { get; set; }
+    public List<CategoryModel> _categories { get; set; }
+    public UserModel _loggedInUser { get; set; }
 
 
     protected override async Task OnInitializedAsync()
     {
-        Categories = await CategoryData.GetAllCategories();
-
-        // TODO: Replace with user lookup. 
-        LoggedInUser = await UserData.GetUserFromAuthentication("abc-123");
+        _categories = await CategoryData.GetAllCategories();
+        _loggedInUser = await authProvider.GetUserFromAuth(UserData);
     }
 
     private void ClosePage()
@@ -77,8 +77,8 @@
         s.Suggestion = _suggestion.Suggestion;
         s.ApprovedForRelease = false;
         s.Description = _suggestion.Description;
-        s.Author = new BasicUserModel(LoggedInUser);
-        s.Category = Categories.FirstOrDefault(c => c.CategoryId == _suggestion.CategoryId);
+        s.Author = new BasicUserModel(_loggedInUser);
+        s.Category = _categories.FirstOrDefault(c => c.CategoryId == _suggestion.CategoryId);
 
         if (s.Category is null)
         {
