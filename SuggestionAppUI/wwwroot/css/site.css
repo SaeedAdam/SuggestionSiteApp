@@ -1,7 +1,26 @@
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,900;1,700;1,900&family=Roboto:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap');
 
 html, body {
-    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    color: #ffffff;
+}
+
+body {
+    background: url(../images/background.jpg) no-repeat center center fixed;
+    background-size: cover;
+    height: 100%;
+}
+
+h1 {
+    padding-top: 1rem;
 }
 
 h1:focus {
@@ -23,7 +42,7 @@ a, .btn-link {
 }
 
 .valid.modified:not([type=checkbox]) {
-    outline: 1px solid #26b050;
+    /*outline: 1px solid #26b050;*/
 }
 
 .invalid {
@@ -37,6 +56,7 @@ a, .btn-link {
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;
+    box-shadow: 0 -1px 2px #000000;
     box-shadow: 0 -1px 2px rgba(0, 0, 0, 0.2);
     display: none;
     left: 0;
@@ -46,7 +66,7 @@ a, .btn-link {
     z-index: 1000;
 }
 
-    #blazor-error-ui .dismiss {
+#blazor-error-ui .dismiss {
         cursor: pointer;
         position: absolute;
         right: 0.75rem;
@@ -62,3 +82,106 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.page-heading {
+    text-align: center;
+}
+
+.suggestion-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 3rem;
+}
+
+.suggest-btn {
+    font-family: 'Montserrat', sans-serif;
+    border-width: 3px;
+    border-radius: 10px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    font-weight: 900;
+}
+
+.btn-outline-light:hover {
+    color: #39BAD8;
+    background-color: #ffffff;
+    border-color: #ffffff;
+}
+
+.suggestion-count {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.btn-order {
+    background-color: #ffffff;
+    border: 0px solid #DDDDDD;
+    border-radius: 10px;
+}
+
+.btn:focus,
+.form-control:focus {
+    box-shadow: none;
+}
+
+
+.sort-selected {
+    background-color: #dddddd;
+    color: #000000;
+    font-weight: 700;
+}
+
+    .sort-selected:hover {
+        color: #000000
+    }
+
+.rounded-control {
+    border-radius: 10px;
+}
+
+.search-box {
+    --bs-gutter-x: 3.5rem;
+}
+
+.categories {
+    margin: 1rem;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.categories div {
+    margin-top: 1rem;
+}
+
+.categories div:hover {
+    cursor: pointer;
+}
+
+.selected-category {
+    font-weight: 700;
+}
+
+.statuses {
+    margin: 1rem;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.statuses div {
+    margin-top: 1rem;
+}
+
+    .statuses div:hover {
+        cursor: pointer;
+    }
+        .v div:hover {
+            cursor: pointer;
+        }
+
+.selected-status {
+    font-weight: 700;
+}
+
