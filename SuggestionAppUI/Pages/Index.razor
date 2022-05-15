@@ -23,6 +23,49 @@
                aria-label="Search box" class="form-control rounded-control"
                @oninput="text => OnSearchInput((string)text.Value!)"/>
     </div>
+    <div class="col-12 d-block d-md-none">
+        @if (_categories is not null && _showCategories)
+        {
+            <div class="categories">
+                <span class="text-uppercase fw-bold">Category</span>
+                <div class="@GetSelectedCategory" @onclick="() => OnCategoryClick()">All</div>
+                @foreach (var c in _categories)
+                {
+                    <div class="@GetSelectedCategory(c.CategoryName)"
+                         @onclick="() => OnCategoryClick(c.CategoryName)">
+                        @c.CategoryName
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="categories" @onclick="() => _showCategories = true">
+                <span class="selected-category">@_selectedCategory</span>
+            </div>
+        }
+        
+        @if (_statuses is not null && _showStatuses)
+        {
+            <div class="statuses">
+                <span class="text-uppercase fw-bold">Category</span>
+                <div class="@GetSelectedStatus()" @onclick="() => OnStatusClick()">All</div>
+                @foreach (var c in _statuses)
+                {
+                    <div class="@GetSelectedStatus(c.StatusName)"
+                         @onclick="() => OnStatusClick(c.StatusName)">
+                        @c.StatusName
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="statuses" @onclick="() => _showStatuses = true">
+                <span class="selected-status">@_selectedStatus</span>
+            </div>
+        }
+    </div>
 </div>
 
 <div class="row">
@@ -33,20 +76,39 @@
                 <div class="suggestion-entry">
                     <div class="@GetVoteClass(s)" @onclick="() => VoteUp(s)">
                         <div class="text-uppercase">@GetUpvoteTopText(s)</div>
-                        <span class="oi oi-caret-top" style="font-size: 3rem;"></span>
+                        <span class="oi oi-caret-top entry-upvote" style="font-size: 3rem;"></span>
                         <div class="text-uppercase">@GetUpvoteBottomText(s)</div>
                     </div>
-                    <div>
+                    <div class="suggestion-entry-text">
                         <div class="suggestion-entry-text-title" @onclick="() => OpenDetails(s)">
                             @s.Suggestion
                         </div>
+                        @if (_archivingSuggestion is null || _archivingSuggestion.Id != s.Id)
+                        {
+                            <div class="suggestion-entry-bottom">
+                                <div class="suggestion-entry-text-category" @onclick="() => OpenDetails(s)">
+                                    @s.Category?.CategoryName
+                                </div>
+                                <AuthorizeView Policy="Admin">
+                                    <button @onclick="() => _archivingSuggestion = s" class="btn suggestion-entry-text-category btn-archive">
+                                        Archive
+                                    </button>
+                                </AuthorizeView>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="suggestion-entry-bottom">
+                                <button class="btn btn-archive btn-archive-confirm" @onclick="ArchiveSuggestion" >
+                                    confirm
+                                </button>
+                                <button class="btn btn-archive btn-archive-reject" @onclick="() => _archivingSuggestion = null">
+                                    cancel
+                                </button>
+                            </div>
+                        }
                     </div>
-                    <div>
-                        <div class="suggestion-entry-text-category" @onclick="() => OpenDetails(s)">
-                            @s.Category?.CategoryName
-                        </div>
-                    </div>
-                    <div calss="suggestion-entry-status @GetSuggestionStatusClass(s)">
+                    <div calss="suggestion-entry-status" class="@GetSuggestionStatusClass(s)">
                         <div class="suggestion-entry-status-text">
                             @s.SuggestionStatus?.StatusName
                         </div>
@@ -55,7 +117,7 @@
             </Virtualize>
         }
     </div>
-    <div class="col-md-4 col-xl-3">
+    <div class="col-md-4 col-xl-3 d-none d-md-block">
         @if (_categories is not null)
         {
             <div class="categories">
@@ -87,11 +149,15 @@
     private List<SuggestionModel> _suggestions;
     private List<CategoryModel> _categories;
     private List<StatusModel> _statuses;
+    private SuggestionModel _archivingSuggestion;
+    
 
     private string _selectedCategory = "All";
     private string _selectedStatus = "All";
     private string _searchText = "";
     bool _isSortedByNew = true;
+    private bool _showCategories = false;
+    private bool _showStatuses = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -240,12 +306,14 @@
     private async Task OnCategoryClick(string category = "All")
     {
         _selectedCategory = category;
+        _showCategories = false;
         await FilterSuggestions();
     }
 
     private async Task OnStatusClick(string status = "All")
     {
         _selectedStatus = status;
+        _showStatuses = false;
         await FilterSuggestions();
     }
 
@@ -389,5 +457,14 @@
         {
             return "";
         }
+    }
+
+    private async Task ArchiveSuggestion()
+    {
+        _archivingSuggestion.Archived = true;
+        await SuggestionData.UpdateSuggestion(_archivingSuggestion);
+        _suggestions.Remove(_archivingSuggestion);
+        _archivingSuggestion = null;
+        //await FilterSuggestions();
     }
 }

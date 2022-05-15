@@ -9,30 +9,32 @@
 @inject NavigationManager NavManager
 
 
-<h1>Make A Suggestion</h1>
+<h1 class="page-heading text-uppercase mb-4">Make A Suggestion</h1>
 
-<div>
-    <div>
-        <div @onclick="ClosePage">Close</div>
+<div class="row justify-content-center col-xl-10 col-lg-10 create-form">
+    <div class="form-layout">
+        <div class="close-button-section">
+            <button class="btn btn-close" @onclick="ClosePage"></button>
+        </div>
     </div>
     @if (_categories is not null)
     {
         <EditForm Model="_suggestion" OnValidSubmit="CreateSuggestion">
             <DataAnnotationsValidator/>
             <ValidationSummary/>
-            <div>
-                <label for="suggestion-text">Suggestion</label>
-                <div>Focus on the topic or technology you want to learn about.</div>
-                <InputText id="suggestion-text" @bind-Value="_suggestion.Suggestion"/>
+            <div class="input-section">
+                <label class="form-label fw-bold text-uppercase" for="suggestion-text">Suggestion</label>
+                <div class="input-description">Focus on the topic or technology you want to learn about.</div>
+                <InputText class="form-control" id="suggestion-text" @bind-Value="_suggestion.Suggestion"/>
             </div>
             <div>
-                <label for="category">Category</label>
-                <div>Choose One Category.</div>
-                <div>
+                <label class="form-label fw-bold text-uppercase" for="category">Category</label>
+                <div class="input-description">Choose One Category.</div>
+                <div class="col-lg-8">
                     <MyInputRadioGroup id="category" @bind-Value="_suggestion.CategoryId">
                         @foreach (var c in _categories)
                         {
-                            <div>
+                            <div class="radio-item-group">
                                 <InputRadio Value="@c.CategoryId" id="@c.CategoryId"/>
                                 <label for="@c.CategoryId">@c.CategoryName - @c.CategoryDescription</label>
                             </div>
@@ -40,13 +42,13 @@
                     </MyInputRadioGroup>
                 </div>
             </div>
-            <div>
-                <label for="description">Description</label>
-                <div>Briefly describe your suggestion.</div>
-                <InputText id="description" @bind-Value="_suggestion.Description"/>
+            <div class="input-section">
+                <label class="form-label fw-bold text-uppercase" for="description">Description</label>
+                <div class="input-description">Briefly describe your suggestion.</div>
+                <InputTextArea class="form-control" id="description" @bind-Value="_suggestion.Description"/>
             </div>
-            <div>
-                <button type="submit">Suggest</button>
+            <div class="center-children">
+                <button class="btn btn-main btn-lg text-uppercase"type="submit">Suggest</button>
             </div>
         </EditForm>
     }

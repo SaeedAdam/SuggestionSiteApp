@@ -2,57 +2,129 @@
 @inject AuthenticationStateProvider authProvider
 @inject IUserData UserData
 @inject ISuggestionData SuggestionData
+@inject IStatusData StatusData
 @inject NavigationManager NavManager
 
 
-<h1>Suggestion Details</h1>
+<h1 class="page-heading text-uppercase mb-4">Suggestion Details</h1>
 
-<div>
-    <div>
+<div class="row justify-content-center detail-form">
+    <div class="col-xl-8 col-lg-10 mb-4 create-form">
         @if (_suggestion is not null)
         {
-            <div>
-                <div>
-                    <div @onclick="VoteUp">
-                        <div>@GetUpvoteTopText()</div>
-                        <span class="oi oi-caret-top"></span>
-                        <div>@GetUpvoteBottomText()</div>
-                    </div>
+            <div class="row suggestion-detail-row">
+                <div class="col-11 suggestion-detail">
                     <div>
-                        <div>@_suggestion.DateCreated.ToString("MM.dd.yyyy")</div>
+                        <div class="@GetVoteClass()" @onclick="VoteUp">
+                            <div class="text-uppercase">@GetUpvoteTopText()</div>
+                            <span class="oi oi-caret-top detail-upvote"></span>
+                            <div class="text-uppercase">@GetUpvoteBottomText()</div>
+                        </div>
+                    
+                        <div class="suggestion-detail-date">
+                            <div>@_suggestion.DateCreated.ToString("MM.dd.yyyy")</div>
+                        </div>
+                    </div>
+                    <div class="suggestion-detail-text">
+                        <div class="fw-bold mb-2 suggestion-detail-suggestion">@_suggestion.Suggestion</div>
+                        <div class="mb-2 suggestion-detail-author">@_suggestion.Author.DisplayName</div>
+                        <div class="mb-2 d-none d-md-block">@_suggestion.Description</div>
+                        <div class="mb-2 suggestion-entry-text-category d-none d-md-block">
+                            @_suggestion.Category.CategoryName
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div>@_suggestion.Suggestion</div>
-                    <div>@_suggestion.Author.DisplayName</div>
-                    <div>@_suggestion.Description</div>
-                    <div>
-                        @_suggestion.Category.CategoryName
-                    </div>
-                </div>
-                <div>
-                    <button @onclick="ClosePage">Close</button>
+                <div class="col-1 close-button-section">
+                    <button class="btn btn-close" @onclick="ClosePage"></button>
                 </div>
             </div>
+            <div class="row d-block d-md-none">
+                <div class="suggestion-detail-text">
+                    <div>@_suggestion.Description</div>
+                    <div class="suggestion-entry-text-category">@_suggestion.Category.CategoryName</div>
+                </div>
+            </div>   
         }
     </div>
 </div>
 
 @if (_suggestion?.SuggestionStatus is not null)
 {
-    <div>
-        <div>
-            <div></div>
-            <div>
-                <div>
+    <div class="row justify-content-center detail-form">
+        <div class="col-xl-8 col-lg-10 suggestion-results create-form">
+            <div class="@GetStatusClass()"></div>
+            <div class="suggestion-detail-status-section">
+                <div class="suggestion-detail-status fw-bold mb-2 suggestion-detail-suggestion">
                     @_suggestion.SuggestionStatus.StatusName
                 </div>
-                <div>
+                <div class="suggestion-detail-owner-notes">
                     @((MarkupString)_suggestion.OwnerNotes)
                 </div>
             </div>
         </div>
     </div>
+}
+
+@if (_suggestion is not null)
+{
+    <AuthorizeView Policy="Admin">
+        <div class="row justify-content-center detail-form">
+            <div class="col-xl-8 col-lg-10 create-form admin-details">
+                <div>
+                    <div class="suggestion-detail-status fw-bold mb-2 suggestion-detail-suggestion">
+                        Set Status
+                    </div>
+                    @if (string.IsNullOrWhiteSpace(_settingStatus))
+                    {
+                        <div class="admin-set-status">
+                            <button @onclick="@(() => _settingStatus = "completed")"
+                                    class="btn suggestion-entry-text-category btn-archive btn-status-completed">
+                                completed
+                            </button>
+                            <button @onclick="@(() => _settingStatus = "watching")"
+                                    class="btn suggestion-entry-text-category btn-archive btn-status-watching">
+                                watching
+                            </button>
+                            <button @onclick="@(() => _settingStatus = "upcoming")"
+                                    class="btn suggestion-entry-text-category btn-archive btn-status-upcoming">
+                                upcoming
+                            </button>
+                            <button @onclick="@(() => _settingStatus = "dismissed")"
+                                    class="btn suggestion-entry-text-category btn-archive btn-status-dismissed">
+                                dismissed
+                            </button>
+                        </div>
+                    }
+                    else if (_settingStatus == "completed")
+                    {
+                        <div>
+                            <input @bind="urlText" class="form-control rounded-control" type="text" 
+                                   placeholder="Url" aria-label="Content Url"/>
+                        </div>
+                        <div class="suggestion-entry-bottom">
+                            <button class="btn btn-archive-confirm" @onclick="CompleteSetStatus" >
+                                confirm
+                            </button>
+                            <button class="btn btn-archive-reject" @onclick="() => _settingStatus = null">
+                                cancel
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="suggestion-entry-bottom">
+                            <button class="btn btn-archive-confirm" @onclick="CompleteSetStatus" >
+                                confirm
+                            </button>
+                            <button class="btn btn-archive-reject" @onclick="() => _settingStatus = null">
+                                cancel
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </AuthorizeView>
 }
 
 
@@ -64,10 +136,47 @@
     private SuggestionModel _suggestion;
     private UserModel _loggedInUser;
 
+    private List<StatusModel> _statuses;
+    private string _settingStatus = "";
+    private string urlText = "";
+
     protected override async Task OnInitializedAsync()
     {
         _suggestion = await SuggestionData.GetSuggestion(Id);
         _loggedInUser = await authProvider.GetUserFromAuth(UserData);
+        _statuses = await StatusData.GetAllStatuses();
+    }
+
+    private async Task CompleteSetStatus()
+    {
+        switch (_settingStatus)
+        {
+            case "completed":
+                if (string.IsNullOrWhiteSpace(urlText))
+                {
+                    return;
+                }
+                _suggestion.SuggestionStatus = _statuses.First(s => s.StatusName.ToLower() == _settingStatus.ToLower());
+                _suggestion.OwnerNotes = $"You are right, this is an important topic for developers. We created a resource about it here: <a id=\"url-color\" href='{urlText}' target='_blank'>{urlText}</a>";
+                break;
+            case "watching":
+                _suggestion.SuggestionStatus = _statuses.First(s => s.StatusName.ToLower() == _settingStatus.ToLower());
+                _suggestion.OwnerNotes = "We noticed the interest this suggestion is getting! If more people are interested we will address this topic in an upcoming resource.";
+                break;
+            case "upcoming":
+                _suggestion.SuggestionStatus = _statuses.First(s => s.StatusName.ToLower() == _settingStatus.ToLower());
+                _suggestion.OwnerNotes = "Great suggestion! We have a resource in the pipeline to address this topic.";
+                break;
+            case "dismissed":
+                _suggestion.SuggestionStatus = _statuses.First(s => s.StatusName.ToLower() == _settingStatus.ToLower());
+                _suggestion.OwnerNotes = "Sometimes a good idea doesn't fit within our scope and vision. This is one of those ideas.";
+                break;
+            default:
+                return;
+        }
+
+        _settingStatus = null;
+        await SuggestionData.UpdateSuggestion(_suggestion);
     }
 
     private void ClosePage()
@@ -85,9 +194,9 @@
         {
             return "Awaiting";
         }
-        
+
         return "Click To";
-        
+
     }
 
     private string GetUpvoteBottomText()
@@ -105,7 +214,7 @@
         {
             if (_suggestion.Author.Id == _loggedInUser.Id)
             {
-    // Can't Vote on your own suggestion
+                // Can't Vote on your own suggestion
                 return;
             }
             if (_suggestion.UserVotes.Add(_loggedInUser.Id) == false)
@@ -119,5 +228,40 @@
         {
             NavManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", true);
         }
+    }
+
+    private string GetVoteClass()
+    {
+        if (_suggestion.UserVotes is null || _suggestion.UserVotes.Count == 0)
+        {
+            return "suggestion-entry-no-votes";
+        }
+        else if(_suggestion.UserVotes.Contains(_loggedInUser?.Id))
+        {
+            return "suggestion-entry-voted";
+        }
+        else
+        {
+            return "suggestion-entry-not-voted";
+        }
+    }
+
+    private string GetStatusClass()
+    {
+        if (_suggestion is null || _suggestion.SuggestionStatus is null)
+        {
+            return "suggestion-detail-status-none";
+        }
+
+        string output = _suggestion.SuggestionStatus.StatusName switch
+        {
+            "Completed" => "suggestion-detail-status-completed",
+            "Watching" => "suggestion-detail-status-watching",
+            "Upcoming" => "suggestion-detail-status-upcoming",
+            "Dismissed" => "suggestion-detail-status-dismissed",
+            _ => "suggestion-detail-status-none"
+
+            };
+        return output;
     }
 }
