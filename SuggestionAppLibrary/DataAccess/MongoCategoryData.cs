@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 
 namespace SuggestionAppLibrary.DataAccess;
+
 public class MongoCategoryData : ICategoryData
 {
-    private readonly IMongoCollection<CategoryModel> _categories;
-    private readonly IMemoryCache _cache;
     private const string CacheName = "CategoryData";
+    private readonly IMemoryCache _cache;
+    private readonly IMongoCollection<CategoryModel> _categories;
 
     public MongoCategoryData(IDbConnection db, IMemoryCache cache)
     {
@@ -13,7 +14,7 @@ public class MongoCategoryData : ICategoryData
         _categories = db.CategoryCollection;
     }
 
-    public async Task<List<CategoryModel>> GetAllCategories()
+    async public Task<List<CategoryModel>> GetAllCategories()
     {
         var output = _cache.Get<List<CategoryModel>>(CacheName);
 

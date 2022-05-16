@@ -1,13 +1,9 @@
 ﻿namespace SuggestionAppLibrary.Models;
+
 public class BasicSuggestionModel
 {
-    [BsonRepresentation(BsonType.ObjectId)]
-    public string Id { get; set; }
-    public string Suggestion { get; set; }
-
     public BasicSuggestionModel()
     {
-
     }
 
     public BasicSuggestionModel(SuggestionModel suggestion)
@@ -15,4 +11,9 @@ public class BasicSuggestionModel
         Id = suggestion.Id;
         Suggestion = suggestion.Suggestion;
     }
+
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; }
+
+    public string Suggestion { get; set; }
 }

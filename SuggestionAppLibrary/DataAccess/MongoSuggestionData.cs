@@ -1,13 +1,14 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 
 namespace SuggestionAppLibrary.DataAccess;
+
 public class MongoSuggestionData : ISuggestionData
 {
-    private readonly IDbConnection _db;
-    private readonly IUserData _userData;
-    private readonly IMemoryCache _cache;
-    private readonly IMongoCollection<SuggestionModel> _suggestions;
     private const string CacheName = "SuggestionData";
+    private readonly IMemoryCache _cache;
+    private readonly IDbConnection _db;
+    private readonly IMongoCollection<SuggestionModel> _suggestions;
+    private readonly IUserData _userData;
 
     public MongoSuggestionData(IDbConnection db, IUserData userData, IMemoryCache cache)
     {
@@ -17,7 +18,7 @@ public class MongoSuggestionData : ISuggestionData
         _suggestions = db.SuggestionCollection;
     }
 
-    public async Task<List<SuggestionModel>> GetAllSuggestions()
+    async public Task<List<SuggestionModel>> GetAllSuggestions()
     {
         var output = _cache.Get<List<SuggestionModel>>(CacheName);
 
@@ -32,7 +33,7 @@ public class MongoSuggestionData : ISuggestionData
         return output;
     }
 
-    public async Task<List<SuggestionModel>> GetUsersSuggestions(string userId)
+    async public Task<List<SuggestionModel>> GetUsersSuggestions(string userId)
     {
         var output = _cache.Get<List<SuggestionModel>>(userId);
         if (output is null)
@@ -46,31 +47,31 @@ public class MongoSuggestionData : ISuggestionData
         return output;
     }
 
-    public async Task<List<SuggestionModel>> GetAllApprovedSuggestion()
+    async public Task<List<SuggestionModel>> GetAllApprovedSuggestion()
     {
         var output = await GetAllSuggestions();
         return output.Where(s => s.ApprovedForRelease = true).ToList();
     }
 
-    public async Task<SuggestionModel> GetSuggestion(string id)
+    async public Task<SuggestionModel> GetSuggestion(string id)
     {
         var results = await _suggestions.FindAsync(s => s.Id == id);
         return results.FirstOrDefault();
     }
 
-    public async Task<List<SuggestionModel>> GetAllSuggestionsWaitingForApproval()
+    async public Task<List<SuggestionModel>> GetAllSuggestionsWaitingForApproval()
     {
         var output = await GetAllSuggestions();
         return output.Where(x => x.ApprovedForRelease == false && x.Rejected == false).ToList();
     }
 
-    public async Task UpdateSuggestion(SuggestionModel suggestion)
+    async public Task UpdateSuggestion(SuggestionModel suggestion)
     {
         await _suggestions.ReplaceOneAsync(s => s.Id == suggestion.Id, suggestion);
         _cache.Remove(CacheName);
     }
 
-    public async Task UpvoteSuggestion(string suggestionId, string userId)
+    async public Task UpvoteSuggestion(string suggestionId, string userId)
     {
         var client = _db.Client;
 
@@ -84,7 +85,7 @@ public class MongoSuggestionData : ISuggestionData
             var suggestionInTransaction = db.GetCollection<SuggestionModel>(_db.SuggestionCollectionName);
             var suggestion = (await suggestionInTransaction.FindAsync(s => s.Id == suggestionId)).First();
 
-            bool isUpvote = suggestion.UserVotes.Add(userId);
+            var isUpvote = suggestion.UserVotes.Add(userId);
             if (isUpvote == false)
             {
                 suggestion.UserVotes.Remove(userId);
@@ -104,6 +105,7 @@ public class MongoSuggestionData : ISuggestionData
                 var suggestionToRemove = user.VotedOnSuggestions.First(s => s.Id == suggestionId);
                 user.VotedOnSuggestions.Remove(suggestionToRemove);
             }
+
             await usersInTransaction.ReplaceOneAsync(session, u => u.Id == userId, user);
 
             await session.CommitTransactionAsync();
@@ -117,7 +119,7 @@ public class MongoSuggestionData : ISuggestionData
         }
     }
 
-    public async Task CreateSuggestion(SuggestionModel suggestion)
+    async public Task CreateSuggestion(SuggestionModel suggestion)
     {
         var client = _db.Client;
 
@@ -145,5 +147,4 @@ public class MongoSuggestionData : ISuggestionData
             throw;
         }
     }
-
 }

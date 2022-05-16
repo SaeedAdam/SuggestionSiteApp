@@ -1,18 +1,20 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 
 namespace SuggestionAppLibrary.DataAccess;
+
 public class MongoStatusData : IStatusData
 {
+    private const string CacheName = "StatusData";
     private readonly IMemoryCache _cache;
     private readonly IMongoCollection<StatusModel> _statuses;
-    private const string CacheName = "StatusData";
+
     public MongoStatusData(IDbConnection db, IMemoryCache cache)
     {
         _cache = cache;
         _statuses = db.StatusCollection;
     }
 
-    public async Task<List<StatusModel>> GetAllStatuses()
+    async public Task<List<StatusModel>> GetAllStatuses()
     {
         var output = _cache.Get<List<StatusModel>>(CacheName);
 

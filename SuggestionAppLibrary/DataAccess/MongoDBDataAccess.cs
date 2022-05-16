@@ -3,6 +3,7 @@
 public class MongoDbDataAccess
 {
     private readonly IMongoDatabase _db;
+
     public MongoDbDataAccess(string dbName, string connectionString)
     {
         var client = new MongoClient(connectionString);
@@ -36,7 +37,7 @@ public class MongoDbDataAccess
         collection.ReplaceOne(
             new BsonDocument("_id", id),
             record,
-            new ReplaceOptions { IsUpsert = true });
+            new ReplaceOptions {IsUpsert = true});
     }
 
     public void DeleteRecord<T>(string table, Guid id)

@@ -30,7 +30,7 @@ else
 
 @code {
 
-    private bool _categoriesCreated; 
+    private bool _categoriesCreated;
     private bool _statusesCreated;
 
     private async Task GenerateSampleData()
@@ -66,9 +66,8 @@ else
 
         await SuggestionData.CreateSuggestion(suggestion);
 
-        suggestion = new ()
+        suggestion = new SuggestionModel
         {
-
             Author = new BasicUserModel(foundUser),
             Category = categories[1],
             Suggestion = "Our Second Suggestion",
@@ -79,7 +78,7 @@ else
 
         await SuggestionData.CreateSuggestion(suggestion);
 
-        suggestion = new()
+        suggestion = new SuggestionModel
         {
             Author = new BasicUserModel(foundUser),
             Category = categories[2],
@@ -91,7 +90,7 @@ else
 
         await SuggestionData.CreateSuggestion(suggestion);
 
-        suggestion = new()
+        suggestion = new SuggestionModel
         {
             Author = new BasicUserModel(foundUser),
             Category = categories[3],
@@ -106,7 +105,7 @@ else
 
         votes.Add("4");
 
-        suggestion = new()
+        suggestion = new SuggestionModel
         {
             Author = new BasicUserModel(foundUser),
             Category = categories[4],
@@ -136,28 +135,28 @@ else
         };
         await CategoryData.CreateCategory(cat);
 
-        cat = new()
+        cat = new CategoryModel
         {
             CategoryName = "Dev Questions",
             CategoryDescription = "Advice on being a developer."
         };
         await CategoryData.CreateCategory(cat);
 
-        cat = new()
+        cat = new CategoryModel
         {
             CategoryName = "In-Depth Tutorial",
             CategoryDescription = "A deep-dive video on how to use a topic."
         };
         await CategoryData.CreateCategory(cat);
 
-        cat = new()
+        cat = new CategoryModel
         {
             CategoryName = "10-Minute-Training",
             CategoryDescription = "A quick \"How do I do this?\" video."
         };
         await CategoryData.CreateCategory(cat);
 
-        cat = new()
+        cat = new CategoryModel
         {
             CategoryName = "Other",
             CategoryDescription = "Not sure which category this fits in."
@@ -183,21 +182,21 @@ else
         };
         await StatusData.CreateStatus(stat);
 
-        stat = new()
+        stat = new StatusModel
         {
             StatusName = "Watching",
             StatusDescription = "The suggestion is interesting. We are watching to see how much interest there is in it."
         };
         await StatusData.CreateStatus(stat);
 
-        stat = new()
+        stat = new StatusModel
         {
             StatusName = "Upcoming",
             StatusDescription = "The suggestion was accepted and it will be released soon."
         };
         await StatusData.CreateStatus(stat);
 
-        stat = new()
+        stat = new StatusModel
         {
             StatusName = "Dismissed",
             StatusDescription = "The suggestion was not something that we are going to undertake."
@@ -206,4 +205,5 @@ else
 
         _statusesCreated = true;
     }
+
 }
