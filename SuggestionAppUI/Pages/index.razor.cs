@@ -124,10 +124,11 @@ public partial class Index
 
         if (string.IsNullOrWhiteSpace(_searchText) == false)
         {
+
             output = output.Where(
                 s => s.Suggestion.Contains(_searchText, StringComparison.InvariantCultureIgnoreCase) ||
                      s.Description.Contains(_searchText, StringComparison.InvariantCultureIgnoreCase)
-                ).ToList();
+            ).ToList();
         }
 
         if (_isSortedByNew)

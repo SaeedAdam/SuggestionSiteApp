@@ -25,7 +25,14 @@ public partial class Create
         SuggestionModel s = new();
         s.Suggestion = _suggestion.Suggestion;
         s.ApprovedForRelease = false;
-        s.Description = _suggestion.Description;
+        if (string.IsNullOrWhiteSpace(_suggestion.Description))
+        {
+            s.Description = "";
+        }
+        else
+        {
+            s.Description = _suggestion.Description;
+        }
         s.Author = new BasicUserModel(_loggedInUser);
         s.Category = _categories.FirstOrDefault(c => c.CategoryId == _suggestion.CategoryId);
 
